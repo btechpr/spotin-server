@@ -52,7 +52,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /users/{id}:
     # our controller name
-    x-swagger-router-controller: getUser
+    x-swagger-router-controller: user
     get:
       description: get a given user by id
       # define the type of response for Success "200" and Error
@@ -103,12 +103,45 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/GetUserResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /businesses:
+    # our controller name
+    x-swagger-router-controller: business
+    get:
+      description: get a list of all businesses
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetBusinessesListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: add a new business
+      parameters:
+        - name: business
+          description: Business properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Business"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetBusinessResponse"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
 definitions:
+  # responses
   GetUsersListResponse:
       properties:
         # The array of movies
@@ -144,6 +177,80 @@ definitions:
             type: string
           phone_number:
             type: string
+  GetBusinessesListResponse:
+      properties:
+        # The array of movies
+        businesses:
+          type: array
+          items: 
+            $ref: "#/definitions/Business"
+                      
+  GetBusinessResponse:
+      $ref: "#/definitions/Business"
+     
+  ErrorResponse:
+    type: object
+    properties:
+      success:
+        type: number
+        description: returns 1 if successful
+      description:
+        type: string
+        description: a short comment 
+    required:
+      - success
+      - description
+  # parameter schemas
+  Business:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        location:
+          type: object
+          properties:
+            address:
+              type: string
+            location:
+              type: string
+        days_of_operation:
+          type: object
+          properties:
+            days:
+              type: string
+            hours:
+              type: string
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              headline:
+                type: string
+              price:
+                type: string
+              description:
+                type: string
+              discount:
+                type: string
+        reviews:
+          type: array
+          items:
+            type: object
+            properties:
+              user:
+                $ref: "#/definitions/User"
+              comment:
+                $ref: "#/definitions/Comment"
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              image:
+                $ref: "#/definitions/Image"
   User:
     type: object
     properties:
@@ -184,23 +291,23 @@ definitions:
       phone_number:
         type: string
         description: designated user's phone number
-  UserID:
+  Comment:
     type: object
     properties:
-      id:
+      headline:
         type: string
-        description: designated user id
-    required:
-      - id
-  ErrorResponse:
-    type: object
-    properties:
-      success:
+        description: designated user name
+      comment:
+        type: string
+        description: designated user name
+      score:
         type: number
-        description: returns 1 if successful
-      description:
+        description: designated user name
+  Image:
+    type: object
+    properties:
+      image:
         type: string
-        description: a short comment 
-    required:
-      - success
-      - description
+        format: byte
+      likes:
+        type: number
